@@ -12,13 +12,20 @@ using MoneyFox.Shared.Resources;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Plugins.Messenger;
 using PropertyChanged;
+using System.Diagnostics;
 
 namespace MoneyFox.Shared.ViewModels
 {
     [ImplementPropertyChanged]
     public class ModifyPaymentViewModel : BaseViewModel
     {
+<<<<<<< 5f8f47f51903e36950c39f7268998ee5e994c960
         private readonly IRepository<Payment> paymentRepository;
+=======
+        
+        private readonly IAccountRepository accountRepository;
+        private readonly IDefaultManager defaultManager;
+>>>>>>> example push
         private readonly IDialogService dialogService;
         private readonly IPaymentManager paymentManager;
 
@@ -34,6 +41,11 @@ namespace MoneyFox.Shared.ViewModels
             IDialogService dialogService,
             IPaymentManager paymentManager)
         {
+<<<<<<< 5f8f47f51903e36950c39f7268998ee5e994c960
+=======
+            Debug.WriteLine("HELLLO");
+            this.paymentRepository = paymentRepository;
+>>>>>>> example push
             this.dialogService = dialogService;
             this.paymentManager = paymentManager;
             this.paymentRepository = paymentRepository;
@@ -274,7 +286,9 @@ namespace MoneyFox.Shared.ViewModels
         /// </summary>
         public string AmountString
         {
-            get { return Utilities.FormatLargeNumbers(amount); }
+            get {
+                Debug.WriteLine("At least this part fired");
+                return Utilities.FormatLargeNumbers(amount); }
             set
             {
                 double convertedValue;
@@ -303,23 +317,48 @@ namespace MoneyFox.Shared.ViewModels
         /// </summary>
         public Payment SelectedPayment
         {
-            get { return selectedPayment; }
+            get {
+                
+                return selectedPayment; }
             set
             {
                 if (value == null) return;
                 selectedPayment = value;
+                //ChargedAccounts = accountRepository.Data;
+                //TargetAccounts = accountRepository.Data;
+                if (selectedPayment.TargetAccount != null)
+                {
+                    for (int i = 0; i < ChargedAccounts.Count; i++)
+                    {
+                        if (selectedPayment.TargetAccount.Name == ChargedAccounts[i].Name)
+                        {
+                            ChargedAccounts.Remove(selectedPayment.TargetAccount);
+                        }
+                    }
+                    if (selectedPayment.ChargedAccount != null)
+                    {
+                        for (int i = 0; i < TargetAccounts.Count; i++)
+                        {
+                            if (selectedPayment.ChargedAccount.Name == TargetAccounts[i].Name)
+                            {
+                                TargetAccounts.Remove(selectedPayment.ChargedAccount);
+                            }
+                        }
+                    }
+
+                }
             }
         }
 
         /// <summary>
         ///     Gives access to all accounts for Charged Dropdown list
         /// </summary>
-        public ObservableCollection<Account> ChargedAccounts { get; }
+        public ObservableCollection<Account> ChargedAccounts { get; set; }
 
         /// <summary>
         ///     Gives access to all accounts for Target Dropdown list
         /// </summary>
-        public ObservableCollection<Account> TargetAccounts { get; }
+        public ObservableCollection<Account> TargetAccounts { get; set; }
 
         /// <summary>
         ///     Returns the Title for the page
