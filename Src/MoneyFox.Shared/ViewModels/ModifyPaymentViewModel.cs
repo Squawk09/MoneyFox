@@ -12,7 +12,13 @@ using MoneyFox.Shared.Resources;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Plugins.Messenger;
 using PropertyChanged;
+<<<<<<< 7664de043251df0a334999cba943e5a9deb4888e
 using System.Diagnostics;
+=======
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml;
+using MoneyFox.Shared.Repositories;
+>>>>>>> my changed
 
 namespace MoneyFox.Shared.ViewModels
 {
@@ -49,11 +55,19 @@ namespace MoneyFox.Shared.ViewModels
             this.dialogService = dialogService;
             this.paymentManager = paymentManager;
             this.paymentRepository = paymentRepository;
-
-            TargetAccounts = accountRepository.Data;
-            ChargedAccounts = accountRepository.Data;
+            tempCollection = new ObservableCollection<Account>(accountRepository.Data);
+            TargetAccounts = new ObservableCollection<Account>(accountRepository.Data);
+            ChargedAccounts = new ObservableCollection<Account>(TargetAccounts);
+           // TempTargetAccounts = new ObservableCollection<Account>(TargetAccounts);
+            //TempChargedAccounts = new ObservableCollection<Account>(ChargedAccounts);
             token = MessageHub.Subscribe<CategorySelectedMessage>(ReceiveMessage);
         }
+
+        //public ObservableCollection<Account> TempTargetAccounts;
+        //public ObservableCollection<Account> TempChargedAccounts;
+        
+
+
 
         public int PaymentId { get; private set; }
 
@@ -223,7 +237,28 @@ namespace MoneyFox.Shared.ViewModels
             Close(this);
         }
 
+        private void UpdateOtherComboBox()
+        {
+            for(int i = 0; i < tempCollection.Count; i++)
+            {
+                if(!TargetAccounts.Contains(tempCollection[i]))
+                {
+                    TargetAccounts.Add(tempCollection[i]);
+                }
+
+                if (!ChargedAccounts.Contains(tempCollection[i]))
+                {
+                    ChargedAccounts.Add(tempCollection[i]);
+                }
+            }
+            ChargedAccounts.Remove(selectedPayment.TargetAccount);
+            TargetAccounts.Remove(selectedPayment.ChargedAccount);
+        }
+
         #region Commands
+
+        public IMvxCommand SelectedItemChangedCommand => new MvxCommand(UpdateOtherComboBox);
+
 
         /// <summary>
         ///     Saves the payment or updates the existing depending on the IsEdit Flag.
@@ -359,6 +394,12 @@ namespace MoneyFox.Shared.ViewModels
         ///     Gives access to all accounts for Target Dropdown list
         /// </summary>
         public ObservableCollection<Account> TargetAccounts { get; set; }
+<<<<<<< 7664de043251df0a334999cba943e5a9deb4888e
+=======
+
+        public ObservableCollection<Account> tempCollection { get; set; }
+
+>>>>>>> my changed
 
         /// <summary>
         ///     Returns the Title for the page
